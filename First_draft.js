@@ -1,34 +1,15 @@
+//Declaring variables
 var my_text = text("0", 10,10, "Green")
 var points = 0;
 var targets = [];
 
-
-class Point {
-  constructor(x,y){
-    this.x = x;
-    this.y = y;
-  }
-}
-
-function collision(mousePos, obj2){
-  if(mousePos.x <= obj2.x - obj2.width/2 || mousePos.x >= obj2.x + obj2.width/2) return false;
-  if(mousePos.y <= obj2.y - obj2.height/2 || mousePos.y >= obj2.y + obj2.height/2) return false;
-  return true;
-}
-
-//Mouse collision loop
+//target creation loop
 repeat(function(){
-  for(let i =0; i < targets.length; i++){
-    if(collision(new Point(mouse.x, mouse.y), targets[i])){
-      points += 100;
-      my_text.message = points;
-      targets[i].radius = 0;
-      targets[i] = undefined;
-      targets.splice(i,1);
-      return;
-    }
+  if(targets.length<10){
+  let temp_circle = circle(Math.random()*width, 0, Math.random()*40+10);
+  targets.push(temp_circle);
   }
-},3);
+},45);
 
 //Target movement loop
 repeat(function(){
@@ -45,10 +26,41 @@ repeat(function(){
   }
 },8);
 
-//target creation loop
-repeat(function(){
-  if(targets.length<10){
-  let temp_circle = circle(Math.random()*width, 0, Math.random()*40+10);
-  targets.push(temp_circle);
+// A helper class
+class Point {
+  constructor(x,y){
+    this.x = x;
+    this.y = y;
   }
-},45);
+}
+
+// Mouse collision function
+function collision(mousePos, target){
+  if(mousePos.x <= target.x - target.width/2 || mousePos.x >= target.x + target.width/2) return false;
+  if(mousePos.y <= target.y - target.height/2 || mousePos.y >= target.y + target.height/2) return false;
+  return true;
+}
+
+// A function that determines the behavior of a target once it is hit.
+function targetHit(target_index){
+  targets[target_index].radius = 0;
+  targets[target_index] = undefined;
+  targets.splice(target_index,1);
+}
+
+// A function that updates the points, given a points increase.
+function updatePoints(points_increase){
+  points += points_increase;
+  my_text.message = points;
+}
+
+//Mouse collision loop
+repeat(function(){
+  for(let i =0; i < targets.length; i++){
+    if(collision(new Point(mouse.x, mouse.y), targets[i])){
+      updatePoints(100);
+      targetHit(i);
+      return;
+    }
+  }
+},3);
