@@ -9,14 +9,12 @@ var max_num_targets = 10; // The maximum number of targets we will allow the gam
 
 // Shape creator, creates a new shape based on the given size and color.
 function shapeCreator(tsize, tcolor){
-  return new circle(Math.random()*width, 0, Math.random()*tsize + 10, tcolor);
+ //Insert code to create a shape here.
 }
 
 // Target creator, creates a new target.
 function targetCreator(){
-  if(targets.length < max_num_targets){
-    targets.push(shapeCreator(25,"blue"));
-  }
+ // How are targets going to be created?  Are we going to have a maximum?
 }
 
 //target creation loop
@@ -26,7 +24,7 @@ repeat(function(){
 
 // Changes the X and Y coordinates of the targets to create movement.
 function movement(change_X, change_Y, index_of_target){
-  targets[index_of_target].y += change_Y;
+ // Insert code to move the targets
 }
 
 // Determines if a target is out of the screen.
@@ -74,14 +72,14 @@ function collision(mousePos, target){
 
 // A function that determines the behavior of a target once it is hit.
 function targetHit(target_index){
-  targets[target_index].radius = 0;
+  // What do target do when they are hit?
   targets[target_index] = undefined;
   targets.splice(target_index,1);
 }
 
-// A function that updates the points, given a points increase.
-function updatePoints(points_increase){
-  points += points_increase;
+// A function that updates the points
+function updatePoints(){
+ // How are points going to be calculated?
   my_text.message = points;
 }
 
@@ -89,7 +87,7 @@ function updatePoints(points_increase){
 repeat(function(){
   for(let i =0; i < targets.length; i++){
     if(collision(new Point(mouse.x, mouse.y), targets[i])){
-      updatePoints(100);
+      updatePoints();
       targetHit(i);
       return;
     }
