@@ -2,32 +2,59 @@
 var my_text = text("0", 10,10, "Green") // The text object displaying the number of points.
 var points = 0; // The number of points the player has.
 var targets = [];  // An array for our targets.
-var target_creation_rate = 45; // Rate at which we will create targets, default every 45 milliseconds
+var target_creation_rate = 65; // Rate at which we will create targets, default every 45 milliseconds
 var target_movement_rate = 8; // Rate at which the targets will update their Y position, every 8 milliseconds
-var target_velocity = 10; // The amount the target's Y position will increase per loop, 10 pixels.
 var collision_rate = 3; // The rate at which we calculate collisions, 3 milliseconds.
+var max_num_targets = 10; // The maximum number of targets we will allow the game to make.
+
+// Shape creator, creates a new shape based on the given size and color.
+function shapeCreator(tsize, tcolor){
+  return new circle(Math.random()*width, 0, Math.random()*tsize + 10, tcolor);
+}
+
+// Target creator, creates a new target.
+function targetCreator(){
+  if(targets.length < max_num_targets){
+    targets.push(shapeCreator(25,"blue"));
+  }
+}
 
 //target creation loop
 repeat(function(){
-  if(targets.length<10){
-  let temp_circle = circle(Math.random()*width, 0, Math.random()*40+10);
-  targets.push(temp_circle);
-  }
+  targetCreator();
 },target_creation_rate);
+
+// Changes the X and Y coordinates of the targets to create movement.
+function movement(change_X, change_Y, index_of_target){
+  targets[index_of_target].y += change_Y;
+}
+
+// Determines if a target is out of the screen.
+function isOutOfScreen(index_of_target){
+  let t_target = targets[index_of_target];
+  let within_horizontal = t_target.x + t_target.width/2 > 0 && t_target.x - t_target.width/2 < width;
+  let within_vertical = t_target.y + t_target.height/2 > 0 && t_target.y - t_target.height/2 < height;
+  return !(within_horizontal && within_vertical);
+}
+
+// Removes a target at the given index
+function removeTarget(index_of_target){
+  if(index_of_target != null && index_of_target < targets.length){
+    targets[index_of_target] = undefined;
+    targets.splice(index_of_target,1);
+  }
+}
 
 //Target movement loop
 repeat(function(){
   let to_remove= null;
   for(let i=0; i < targets.length; i++){
-    targets[i].y += target_velocity; //Increasing the Y position of the target moves it down the screen.
-    if(targets[i].y > height+targets[i].radius){ //Any targets past the bottom should be ignored.
+    movement(0, 10, i);
+    if(isOutOfScreen(i)){ //Any targets past the bottom should be ignored.
       to_remove = i;
     }
   }
-  if(to_remove != null) { // Remove the target from the array
-    targets[to_remove] = undefined;
-    targets.splice(to_remove,1);
-  }
+  removeTarget(to_remove); 
 },target_movement_rate);
 
 // A helper class
